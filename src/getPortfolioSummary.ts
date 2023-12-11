@@ -21,11 +21,8 @@ const sampleResponse: getPortfolioSummaryResponse = {
   ],
 };
 
-getPortfolioSummary.get(
-  "/:getPortfolioSummaryRequest",
-  (request: Request, response: Response) => {
-    const req = request.params.getPortfolioSummaryRequest;
-    console.log(req);
-    response.json(sampleResponse);
-  }
-);
+getPortfolioSummary.get("/", (request: Request, response: Response) => {
+  const req = request.query;
+  console.log(req);
+  response.json(sampleResponse);
+});

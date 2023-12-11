@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { getPortfolioSummary } from "./getPortfolioSummary";
+import cors from "cors";
 
 // Define a strongly typed data model
 interface Todo {
@@ -14,9 +15,26 @@ const todos: Todo[] = [
   { id: 2, title: "Build an Express server", completed: true },
 ];
 
+const corsAllowedUrls = ["http://localhost:12340"];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (error: Error | null, allowed?: boolean) => void
+  ) => {
+    if (!origin || corsAllowedUrls.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
 // Express setup
 const app = express();
 app.use(express.json());
+
+app.use(cors(corsOptions));
 
 // Routes
 app.get("/todos", (req: Request, res: Response) => {
