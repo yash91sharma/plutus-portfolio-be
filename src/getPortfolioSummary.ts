@@ -3,6 +3,7 @@ import {
   ValidateFields,
   GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS,
   ConvertTimePeriodToDates,
+  SQLDB_GET_SNAPSHOT_URL,
 } from "./utils";
 import axios from "axios";
 
@@ -27,17 +28,39 @@ const sampleResponse: getPortfolioSummaryResponse = {
   ],
 };
 
-getPortfolioSummary.get("/", (request: Request, response: Response) => {
-  const data = request.body;
-  const fieldError: string = ValidateFields(
-    data,
-    GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS
-  );
-  if (fieldError.length !== 0) {
-    return response.status(400).json({ error: fieldError });
+getPortfolioSummary.get("/", async (request: Request, response: Response) => {
+  try {
+    const data = request.body;
+    const fieldError: string = ValidateFields(
+      data,
+      GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS
+    );
+    if (fieldError.length !== 0) {
+      return response.status(400).json({ error: fieldError });
+    }
+    const portfolioId = data["portfolio_id"];
+    const timePeriod = data["time_period"];
+    const { startDate, endDate } = ConvertTimePeriodToDates(timePeriod);
+    const sqldbRequest = {
+      portfolio_id: portfolioId,
+      snapshot_date: endDate,
+      start_date: startDate,
+      end_date: endDate,
+    };
+    console.log("making request: ", sqldbRequest);
+    const sqldbResponse = await axios.get(SQLDB_GET_SNAPSHOT_URL, {
+      data: sqldbRequest,
+      headers: { "Content-Type": "application/json" },
+    });
+    console.log("Got response: ", sqldbResponse);
+    return response.status(200).json({ data: sampleResponse });
+  } catch (error: any) {
+    console.error(
+      `Error fetching getPortfolioSummary data for request ${request}:`,
+      error
+    );
+    return response
+      .status(500)
+      .json({ error: error.message || "Internal Server Error" });
   }
-  const { startDate, endDate } = ConvertTimePeriodToDates(data["time_period"]);
-  console.log(startDate, endDate);
-  // send another http request.
-  return response.status(200).json({ data: sampleResponse });
 });

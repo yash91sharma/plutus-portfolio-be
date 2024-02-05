@@ -109,3 +109,6 @@ export function ConvertTimePeriodToDates(timePeriod: TimePeriod): {
     endDate: endDate.toISOString().split("T")[0],
   };
 }
+
+export const SQLDB_GET_SNAPSHOT_URL =
+  "http://127.0.0.1:12342/getSnapshotByPortfolio";
