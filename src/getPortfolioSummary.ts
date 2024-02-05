@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { ValidateFields, GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS } from "./utils";
 
 export const getPortfolioSummary = express.Router();
 
@@ -22,7 +23,14 @@ const sampleResponse: getPortfolioSummaryResponse = {
 };
 
 getPortfolioSummary.get("/", (request: Request, response: Response) => {
-  const req = request.query;
-  console.log(req);
-  response.json(sampleResponse);
+  const data = request.body;
+  const fieldError: string = ValidateFields(
+    data,
+    GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS
+  );
+  if (fieldError.length !== 0) {
+    return response.status(400).json({ error: fieldError });
+  }
+  console.log(data);
+  return response.status(200).json({ data: sampleResponse });
 });
