@@ -1,5 +1,9 @@
 import express, { Request, Response } from "express";
-import { ValidateFields, GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS } from "./utils";
+import {
+  ValidateFields,
+  GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS,
+  ConvertTimePeriodToDates,
+} from "./utils";
 import axios from "axios";
 
 export const getPortfolioSummary = express.Router();
@@ -32,7 +36,8 @@ getPortfolioSummary.get("/", (request: Request, response: Response) => {
   if (fieldError.length !== 0) {
     return response.status(400).json({ error: fieldError });
   }
-  console.log(data);
+  const { startDate, endDate } = ConvertTimePeriodToDates(data["time_period"]);
+  console.log(startDate, endDate);
   // send another http request.
   return response.status(200).json({ data: sampleResponse });
 });

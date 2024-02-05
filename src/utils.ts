@@ -42,3 +42,71 @@ function isTimePeriod(value: string): value is TimePeriod {
     "All Time",
   ].includes(value);
 }
+
+export function ConvertTimePeriodToDates(timePeriod: TimePeriod): {
+  startDate: string;
+  endDate: string;
+} {
+  const endDate = new Date();
+  const timeZoneOffset = 480; // Pacific Time Zone offset is UTC-8 hours (in minutes)
+  endDate.setMinutes(endDate.getMinutes() - timeZoneOffset);
+  // Sets time part to midnight (00:00:00) for both startDate and endDate
+  endDate.setHours(0, 0, 0, 0);
+
+  let startDate: Date;
+  switch (timePeriod) {
+    case "Week":
+      startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - 7);
+      break;
+
+    case "Month":
+      startDate = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - 1,
+        endDate.getDate()
+      );
+      break;
+
+    case "Quarter":
+      startDate = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - 3,
+        endDate.getDate()
+      );
+      break;
+
+    case "Year":
+      startDate = new Date(
+        endDate.getFullYear() - 1,
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      break;
+
+    case "Year Till Date":
+      startDate = new Date(endDate.getFullYear(), 0, 1);
+      break;
+
+    case "5 Year":
+      startDate = new Date(
+        endDate.getFullYear() - 5,
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      break;
+
+    case "All Time":
+      // Choose a reasonable start date for "All Time," e.g., project inception date
+      startDate = new Date(2021, 10, 23);
+      break;
+
+    default:
+      throw new Error("Invalid TimePeriod");
+  }
+
+  return {
+    startDate: startDate.toISOString().split("T")[0],
+    endDate: endDate.toISOString().split("T")[0],
+  };
+}
