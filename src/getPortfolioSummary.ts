@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { ValidateFields, GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS } from "./utils";
+import axios from "axios";
 
 export const getPortfolioSummary = express.Router();
 
@@ -32,5 +33,6 @@ getPortfolioSummary.get("/", (request: Request, response: Response) => {
     return response.status(400).json({ error: fieldError });
   }
   console.log(data);
+  // send another http request.
   return response.status(200).json({ data: sampleResponse });
 });
