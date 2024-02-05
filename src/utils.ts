@@ -97,7 +97,6 @@ export function ConvertTimePeriodToDates(timePeriod: TimePeriod): {
       break;
 
     case "All Time":
-      // Choose a reasonable start date for "All Time," e.g., project inception date
       startDate = new Date(2021, 10, 23);
       break;
 
