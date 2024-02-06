@@ -9,14 +9,14 @@ import axios from "axios";
 
 export const getPortfolioSummary = express.Router();
 
-export interface LineGraphData {
+export interface PortfolioData {
   date: string;
   value: number[];
 }
 
 export interface getPortfolioSummaryResponse {
   portfolioLabels: string[];
-  portfolioData: LineGraphData[];
+  portfolioData: PortfolioData[];
 }
 
 const sampleResponse: getPortfolioSummaryResponse = {
@@ -42,18 +42,31 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
     const timePeriod = data["time_period"];
     const { startDate, endDate } = ConvertTimePeriodToDates(timePeriod);
     const sqldbRequest = {
-      portfolio_id: portfolioId,
-      snapshot_date: endDate,
+      portfolio_ids: portfolioId,
       start_date: startDate,
       end_date: endDate,
     };
-    console.log("making request: ", sqldbRequest);
     const sqldbResponse = await axios.get(SQLDB_GET_SNAPSHOT_URL, {
       data: sqldbRequest,
       headers: { "Content-Type": "application/json" },
     });
-    console.log("Got response: ", sqldbResponse);
-    return response.status(200).json({ data: sampleResponse });
+
+    if (sqldbResponse.status === 200) {
+      const responseData: getPortfolioSummaryResponse = {
+        portfolioLabels: [],
+        portfolioData: [],
+      };
+      const rows: any[] = sqldbResponse.data?.rows || [];
+      for (const row of rows) {
+        console.log("row: ", row);
+        const date = row.snapshot_date;
+        const value = row.portfolio_value;
+        responseData.portfolioData.push({ date, value });
+      }
+      return response.status(200).json({ data: responseData });
+    } else {
+      // throw some error.
+    }
   } catch (error: any) {
     console.error(
       `Error fetching getPortfolioSummary data for request ${request}:`,
