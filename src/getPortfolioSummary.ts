@@ -42,7 +42,7 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
     const timePeriod = data["time_period"];
     const { startDate, endDate } = ConvertTimePeriodToDates(timePeriod);
     const sqldbRequest = {
-      portfolio_ids: portfolioId,
+      portfolio_id: portfolioId,
       start_date: startDate,
       end_date: endDate,
     };
@@ -53,19 +53,21 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
 
     if (sqldbResponse.status === 200) {
       const responseData: getPortfolioSummaryResponse = {
-        portfolioLabels: [],
+        portfolioLabels: [portfolioId],
         portfolioData: [],
       };
       const rows: any[] = sqldbResponse.data?.rows || [];
       for (const row of rows) {
-        console.log("row: ", row);
+        // console.log("row: ", row);
         const date = row.snapshot_date;
         const value = row.portfolio_value;
         responseData.portfolioData.push({ date, value });
       }
       return response.status(200).json({ data: responseData });
     } else {
-      // throw some error.
+      throw new Error(
+        `Failed to fetch data from SQL database with error: ${sqldbResponse.status}`
+      );
     }
   } catch (error: any) {
     console.error(
