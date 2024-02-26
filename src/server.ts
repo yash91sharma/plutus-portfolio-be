@@ -2,7 +2,7 @@ import express from "express";
 import { getPortfolioSummary } from "./getPortfolioSummary";
 import cors from "cors";
 
-const corsAllowedUrls = ["http://localhost:12341", "http://localhost:12342"];
+const corsAllowedUrls = ["http://localhost:12340"];
 
 const corsOptions: cors.CorsOptions = {
   origin: (
@@ -29,5 +29,5 @@ app.use("/getPortfolioSummary", getPortfolioSummary);
 // Start the server
 const PORT = 12343;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://127.0.0.1:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
