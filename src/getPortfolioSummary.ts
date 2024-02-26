@@ -31,12 +31,17 @@ const sampleResponse: getPortfolioSummaryResponse = {
 getPortfolioSummary.get("/", async (request: Request, response: Response) => {
   try {
     const data = request.body;
+    console.log(
+      `GetPortfolioSummary request received with fields: ${JSON.stringify(
+        data
+      )}`
+    );
     const fieldError: string = ValidateFields(
       data,
       GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS
     );
     if (fieldError.length !== 0) {
-      return response.status(400).json({ error: fieldError });
+      throw new Error(fieldError);
     }
     const portfolioId = data["portfolio_id"];
     const timePeriod = data["time_period"];
@@ -58,11 +63,11 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
       };
       const rows: any[] = sqldbResponse.data?.rows || [];
       for (const row of rows) {
-        // console.log("row: ", row);
         const date = row.snapshot_date;
         const value = row.portfolio_value;
         responseData.portfolioData.push({ date, value });
       }
+      console.log("Success fetching portfolio summary.");
       return response.status(200).json({ data: responseData });
     } else {
       throw new Error(
@@ -71,7 +76,7 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
     }
   } catch (error: any) {
     console.error(
-      `Error fetching getPortfolioSummary data for request ${request}:`,
+      "Error fetching getPortfolioSummary data for request: ",
       error
     );
     return response
