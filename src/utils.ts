@@ -3,7 +3,7 @@ export interface FieldsWithType {
   type: string | TimePeriod;
 }
 
-type TimePeriod =
+export type TimePeriod =
   | "Week"
   | "Month"
   | "Quarter"
@@ -13,8 +13,8 @@ type TimePeriod =
   | "All Time";
 
 export const GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS: FieldsWithType[] = [
-  { name: "portfolio_id", type: "string" },
-  { name: "time_period", type: "TimePeriod" },
+  { name: "portfolioId", type: "string" },
+  { name: "timePeriod", type: "TimePeriod" },
 ];
 
 export function ValidateFields(data: any, fields: FieldsWithType[]): string {

@@ -4,8 +4,10 @@ import {
   GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS,
   ConvertTimePeriodToDates,
   SQLDB_GET_SNAPSHOT_URL,
+  TimePeriod,
 } from "./utils";
 import axios from "axios";
+import { time } from "console";
 
 export const getPortfolioSummary = express.Router();
 
@@ -30,22 +32,23 @@ const sampleResponse: getPortfolioSummaryResponse = {
 
 getPortfolioSummary.get("/", async (request: Request, response: Response) => {
   try {
-    const data = request.body;
     console.log(
       `GetPortfolioSummary request received with fields: ${JSON.stringify(
-        data
+        request.query
       )}`
     );
+    const { portfolioId, timePeriod } = request.query;
     const fieldError: string = ValidateFields(
-      data,
+      { portfolioId, timePeriod },
       GET_PORTFOLIO_SUMMARY_REQUIRED_FIELDS
     );
     if (fieldError.length !== 0) {
       throw new Error(fieldError);
     }
-    const portfolioId = data["portfolio_id"];
-    const timePeriod = data["time_period"];
-    const { startDate, endDate } = ConvertTimePeriodToDates(timePeriod);
+    // const portfolioId = data["portfolio_id"];
+    // const timePeriod = data["time_period"];
+    const validateTimePeriod: TimePeriod = timePeriod as TimePeriod;
+    const { startDate, endDate } = ConvertTimePeriodToDates(validateTimePeriod);
     const sqldbRequest = {
       portfolio_id: portfolioId,
       start_date: startDate,
@@ -58,7 +61,7 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
 
     if (sqldbResponse.status === 200) {
       const responseData: getPortfolioSummaryResponse = {
-        portfolioLabels: [portfolioId],
+        portfolioLabels: [portfolioId as string],
         portfolioData: [],
       };
       const rows: any[] = sqldbResponse.data?.rows || [];
