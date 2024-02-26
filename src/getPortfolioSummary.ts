@@ -67,7 +67,7 @@ getPortfolioSummary.get("/", async (request: Request, response: Response) => {
       const rows: any[] = sqldbResponse.data?.rows || [];
       for (const row of rows) {
         const date = row.snapshot_date;
-        const value = row.portfolio_value;
+        const value = [row.portfolio_value];
         responseData.portfolioData.push({ date, value });
       }
       console.log("Success fetching portfolio summary.");
