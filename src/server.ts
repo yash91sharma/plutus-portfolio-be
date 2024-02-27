@@ -2,7 +2,7 @@ import express from "express";
 import { getPortfolioSummary } from "./getPortfolioSummary";
 import cors from "cors";
 
-const corsAllowedUrls = ["http://localhost:12340"];
+const corsAllowedUrls = ["http://127.0.0.1:12341"];
 
 const corsOptions: cors.CorsOptions = {
   origin: (
